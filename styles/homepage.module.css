@@ -1,0 +1,24 @@
+.logo {
+  margin: 50px auto;
+}
+
+.logo img {
+  width: 20%;
+  margin: auto;
+}
+
+.paper {
+  border-color: red;
+  padding: 2px 4px;
+  display: flex;
+  align-items: center;
+  width: 400px;
+  margin: auto;
+}
+
+/* .search input{
+    border-radius: 10px;
+    margin: auto;
+    padding: 10px 0;
+    width: 40%;
+} */
