@@ -23,9 +23,9 @@ class TrieNode {
  * @description A Trie Tree cache that will help with word search and insertion.
  *
  */
-class TrieTree {
-  _root: TrieNode;
-  _size: number;
+export class TrieTree {
+  private _root: TrieNode;
+  private _size: number;
   constructor() {
     this._root = new TrieNode();
     this._size = 0;
@@ -67,6 +67,35 @@ class TrieTree {
   size(): number {
     return this._size;
   }
+  // printAll(): void {
+  //   const wordArr = new Array(this._size);
+  //   const arr = this.dfs(this._root);
+  //   wordArr.push(arr);
+  //   for (const str of wordArr) console.log(str);
+  // }
+
+  // private dfs(node: TrieNode): Array<string> {
+  //   const arr: Array<string> = Array();
+  //   for (const key in node.children) {
+  //     const string = key;
+  //     string.concat(this.stringBuilder(node.children[key]).join());
+  //     arr.push(string);
+  //   }
+  //   return arr;
+  // }
+
+  // private stringBuilder(node: TrieNode): Array<string> {
+  //   if (node.endOfWord) return [];
+  //   const returnStringArr = [];
+  //   for (const k in node.children) {
+  //     returnStringArr.push(k);
+  //     const val = this.stringBuilder(node.children[k]);
+  //     if (val.length > 0) {
+  //       returnStringArr.concat(val);
+  //     }
+  //   }
+  //   return returnStringArr;
+  // }
 }
 
 /**
@@ -78,9 +107,9 @@ class TrieTree {
  *              the search bar.
  *
  */
-class WordCacheSingleton {
-  static instance: WordCacheSingleton;
-  static cache: TrieTree;
+export class WordCacheSingleton {
+  private static instance: WordCacheSingleton;
+  private static readonly cache: TrieTree = new TrieTree();
 
   constructor() {
     if (!WordCacheSingleton.instance) {
@@ -90,15 +119,14 @@ class WordCacheSingleton {
     return WordCacheSingleton.instance;
   }
 
-  getCache(): TrieTree {
-    if (!WordCacheSingleton.cache) {
-      const newCache: TrieTree = new TrieTree();
-      return newCache;
+  public static getInstance(): WordCacheSingleton {
+    if (!WordCacheSingleton.instance) {
+      WordCacheSingleton.instance = new WordCacheSingleton();
     }
+    return WordCacheSingleton.instance;
+  }
+
+  public static getCache(): TrieTree {
     return WordCacheSingleton.cache;
   }
 }
-
-const wordCache = new WordCacheSingleton();
-Object.freeze(wordCache);
-export { wordCache, TrieTree };

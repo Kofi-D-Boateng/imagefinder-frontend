@@ -5,13 +5,15 @@ import Layout from "../components/Layout";
 import logo from "assets/Image_Finder.png";
 import classes from "../styles/homepage.module.css";
 import InputForm from "../components/form/InputForm";
-import { wordCache } from "@/components/ui/classes/wordCacheSingleton";
+import { WordCacheSingleton } from "@/components/ui/classes/wordCacheSingleton";
 import { SearchType } from "../enums/Search";
 
 const IndexPage = () => {
   const router: NextRouter = useRouter();
   const [isValid, setIsValid] = useState<boolean>(false);
-  const cache = wordCache.getCache();
+  const urlPattern =
+    /^(http(s)?:\/\/)?(www\.)?([a-z0-9]+\.)?(com|net|org|edu|gov|mil|biz|info|io|ai)(\/[\w\-\.\?\=\&]*)*$/i;
+  const cache = WordCacheSingleton.getCache();
   const urlSubmitionHandler: (event: FormEvent<HTMLFormElement>) => void = (
     e
   ) => {
@@ -29,41 +31,41 @@ const IndexPage = () => {
     });
   };
   const onFocusHandler: (event: FocusEvent<HTMLInputElement>) => void = (e) => {
-    const value = e.currentTarget.value;
-    console.log(value);
-    if (!value) {
-      if (isValid) {
-        setIsValid(false);
+    const values: string[] = e.currentTarget.value.split(",");
+    for (const string of values) {
+      const str = string.trim();
+      if (!cache.search(str)) {
+        if (!urlPattern.test(str)) {
+          if (isValid) {
+            setIsValid(false);
+          }
+        } else {
+          cache.insert(str);
+          if (!isValid) {
+            setIsValid(true);
+          }
+        }
       }
-      return;
     }
-    console.log(value);
   };
 
   const onChangeHandler: (event: ChangeEvent<HTMLInputElement>) => void = (
     e
   ) => {
-    const urlPattern =
-      /^(http(s)?:\/\/)?(www\.)?([a-z]+\.)?(com|net|org|edu|gov|mil|biz|info|io|ai)(\/[\w\-\.\?\=\&]*)*$/i;
-    const value: string[] = e.currentTarget.value.split(",");
-    for (const string of value) {
-      console.log(string);
-      console.log(cache.search(string));
-      if (!cache.search(string)) {
-        if (!string.match(urlPattern)) {
+    const values: string[] = e.currentTarget.value.split(",");
+    for (const string of values) {
+      const str = string.trim();
+      if (!cache.search(str)) {
+        if (!urlPattern.test(str)) {
           if (isValid) {
             setIsValid(false);
-            return;
           }
         } else {
-          console.log("INSERTING");
-          cache.insert(string);
+          cache.insert(str);
           if (!isValid) {
             setIsValid(true);
           }
         }
-      } else {
-        console.log("True");
       }
     }
   };
