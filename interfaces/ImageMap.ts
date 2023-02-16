@@ -1,7 +1,7 @@
-type ImageMap = {
-  [key: string]: Set<string>;
+export type ImageMap<K extends string | number | symbol, V> = {
+  [key in K]?: V[];
 };
 
-export type UrlImageMap = {
-  [key: string]: ImageMap;
+export type UrlImageMap<K extends string | number | symbol, V> = {
+  [key in K]?: ImageMap<K, V>;
 };

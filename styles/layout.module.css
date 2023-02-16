@@ -1,0 +1,83 @@
+@keyframes fadein {
+  from {
+    text-decoration: none;
+    color: blue;
+  }
+  to {
+    text-decoration: underline;
+    color: black;
+  }
+}
+
+/* Firefox < 16 */
+@-moz-keyframes fadein {
+  from {
+    text-decoration: none;
+    color: blue;
+  }
+  to {
+    text-decoration: underline;
+    color: black;
+  }
+}
+
+/* Safari, Chrome and Opera > 12.1 */
+@-webkit-keyframes fadein {
+  from {
+    text-decoration: none;
+    color: blue;
+  }
+  to {
+    text-decoration: underline;
+    color: black;
+  }
+}
+
+/* Internet Explorer */
+@-ms-keyframes fadein {
+  from {
+    text-decoration: none;
+    color: blue;
+  }
+  to {
+    text-decoration: underline;
+    color: black;
+  }
+}
+
+/* Opera < 12.1 */
+@-o-keyframes fadein {
+  from {
+    text-decoration: none;
+    color: blue;
+  }
+  to {
+    text-decoration: underline;
+    color: black;
+  }
+}
+
+.footer {
+  background-color: lightgray;
+  text-align: center;
+  top: auto;
+  bottom: 0;
+}
+
+.navbar {
+  background-color: white;
+  color: black;
+}
+
+.link {
+  margin: 0 10px;
+  text-decoration: none;
+  color: black;
+  transition-duration: 300s;
+  transition-property: text-decoration, color;
+}
+
+.link:hover {
+  color: lightgray;
+  text-decoration: underline;
+}

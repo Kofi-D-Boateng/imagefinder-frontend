@@ -1,3 +1,58 @@
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Firefox < 16 */
+@-moz-keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Safari, Chrome and Opera > 12.1 */
+@-webkit-keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Internet Explorer */
+@-ms-keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Opera < 12.1 */
+@-o-keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.criteria {
+  display: block;
+  text-align: center;
+  color: red;
+}
+
 .logo {
   margin: 50px auto;
 }
@@ -5,14 +60,20 @@
 .logo img {
   width: 20%;
   margin: auto;
+  transition-property: box-shadow;
+  animation: fadein;
+  -webkit-animation: fadein 3s;
+  -moz-animation: fadein 3s;
+  -o-animation: fadein 3s;
 }
 
 .paper {
-  border-color: red;
+  border: 1px solid lightgray;
+  border-radius: 10px 10px;
   padding: 2px 4px;
   display: flex;
   align-items: center;
-  width: 400px;
+  width: 600px;
   margin: auto;
 }
 
