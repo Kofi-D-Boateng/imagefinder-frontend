@@ -1,4 +1,4 @@
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import IndexPage from "pages";
 import "@testing-library/jest-dom";
@@ -18,7 +18,7 @@ describe("Homepage Test Suite", () => {
     render(<IndexPage />);
     const submitButton = await waitFor(() => screen.findByRole("button"));
     expect(submitButton).toBeInTheDocument();
-    fireEvent.click(submitButton);
+    userEvent.click(submitButton);
     expect(submitButton).toBeInTheDocument();
   });
 
@@ -34,8 +34,8 @@ describe("Homepage Test Suite", () => {
     );
     for (const element of criteriaText) expect(element).toBeInTheDocument();
     expect(textField).toBeInTheDocument();
-    userEvent.click(textField);
-    userEvent.type(textField, "http://testurl.com");
+    await userEvent.click(textField);
+    await userEvent.type(textField, "http://testurl.com", { delay: 1 });
     userEvent.click(criteriaText[0]);
     for (const element of criteriaText) expect(element).not.toBeInTheDocument();
   });

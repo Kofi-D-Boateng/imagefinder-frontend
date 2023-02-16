@@ -6,7 +6,7 @@ import axios from "axios";
 import ErrorPage from "../../components/result/ErrorPage";
 import InProgress from "../../components/result/InProgress";
 import Results from "../../components/result/Results";
-import { NextRouter, useRouter } from "next/router";
+
 type Props = {
   urlImageMap: UrlImageMap<string, String>;
   status: { error: boolean; code: number };
@@ -19,7 +19,6 @@ const ResultPage: FC<{ q: string | string[]; style: string | string[] }> = ({
   q,
   style,
 }) => {
-  // const router:NextRouter = useRouter();
   const [data, setData] = useState<Props>({
     isSearching: true,
     status: { error: false, code: 0 },

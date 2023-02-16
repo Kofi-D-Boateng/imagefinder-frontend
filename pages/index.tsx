@@ -6,11 +6,7 @@ import logo from "assets/Image_Finder.png";
 import classes from "../styles/homepage.module.css";
 import InputForm from "../components/form/InputForm";
 import { wordCache } from "@/components/ui/classes/wordCacheSingleton";
-
-enum SearchType {
-  SINGLE = "SINGLE",
-  VERBOSE = "VERBOSE",
-}
+import { SearchType } from "../enums/Search";
 
 const IndexPage = () => {
   const router: NextRouter = useRouter();

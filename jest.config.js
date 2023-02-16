@@ -21,6 +21,7 @@ const customJestConfig = {
   moduleNameMapper: {
     "^@/components/(.*)$": "<rootDir>/components/$1",
     "^@/components/ui/classes/(.*)$": "<rootDir>/components/ui/classes/$1",
+    "^msw$": "<rootDir>/node_modules/msw/lib/index.js",
   },
   setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
   testEnvironment: "jest-environment-jsdom",

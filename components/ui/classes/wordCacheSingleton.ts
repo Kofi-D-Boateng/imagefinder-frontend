@@ -39,7 +39,6 @@ class TrieTree {
     if (!str || str.trim().length <= 0) return;
     let currNode = this._root;
     for (const char of str) {
-      console.log(char);
       if (!currNode.children[char]) {
         const newNode = new TrieNode();
         currNode.children[char] = newNode;
@@ -58,7 +57,6 @@ class TrieTree {
     if (!str || str.trim().length <= 0) return false;
     let currNode = this._root;
     for (const char of str) {
-      console.log(currNode.children[char]);
       if (!currNode.children[char]) {
         return false;
       }
@@ -69,15 +67,6 @@ class TrieTree {
   size(): number {
     return this._size;
   }
-  // print(prefix:string):string[]{
-  //   const strArr:string[] = new Array();
-  //   if(!prefix || prefix.trim().length <= 0) return strArr;
-  //   console.log("[IN PROGRESS]: Starting print...")
-  //   for(const char of prefix){
-
-  //   }
-  //   return strArr;
-  // }
 }
 
 /**

@@ -5,7 +5,8 @@
     "allowJs": true,
     "baseUrl": ".",
     "paths": {
-      "@/components/*": ["components/*"]
+      "@/components/*": ["components/*"],
+      "msw": ["node_modules/msw/lib/index"]
     },
     "skipLibCheck": true,
     "strict": false,
