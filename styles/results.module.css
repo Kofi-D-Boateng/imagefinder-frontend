@@ -9,3 +9,72 @@
   align-content: center;
   justify-content: space-between;
 }
+
+.header {
+  background-color: lightgray;
+}
+
+.card {
+  margin: 50px auto;
+  width: 90%;
+}
+
+.media {
+  height: 400px;
+  width: 100%;
+  overflow-y: auto;
+}
+
+.cancelBtn {
+  text-align: center;
+  padding: 10px 0;
+  background-color: #d2042d;
+  color: white;
+  border-color: #d2042d;
+  text-transform: none;
+  transition-duration: 400;
+  transition-property: all;
+}
+
+.cancelBtn:hover {
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.downloadBtn {
+  text-align: center;
+  padding: 10px 0;
+  background-color: #228b22;
+  color: white;
+  border-color: #228b22;
+  text-transform: none;
+  transition-duration: 400;
+  transition-property: all;
+}
+
+.downloadBtn:hover {
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.selectBtn {
+  text-align: center;
+  padding: 10px 0;
+  background-color: #4169e1;
+  color: white;
+  border-color: #4169e1;
+  text-transform: none;
+  transition-duration: 400;
+  transition-property: all;
+}
+
+.selectBtn:hover {
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.nonFound {
+  width: 430px;
+  height: 430px;
+  margin: auto;
+}
