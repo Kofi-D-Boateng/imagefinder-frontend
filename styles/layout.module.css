@@ -69,6 +69,13 @@
   color: black;
 }
 
+.navbar2 {
+  background-color: white;
+  border-color: black;
+  color: black;
+  border-bottom: 1px;
+}
+
 .link {
   margin: 0 10px;
   text-decoration: none;
@@ -80,4 +87,22 @@
 .link:hover {
   color: lightgray;
   text-decoration: underline;
+}
+
+.link2 {
+  margin: 0 40px;
+  text-decoration: none;
+  color: black;
+  transition-duration: 300s;
+  transition-property: text-decoration, color;
+}
+
+.link2:hover {
+  color: lightgray;
+  text-decoration: underline;
+}
+
+.logo {
+  width: 50px;
+  height: 50px;
 }

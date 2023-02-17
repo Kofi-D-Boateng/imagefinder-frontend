@@ -12,6 +12,7 @@ import {
   ImageListItem,
   ImageListItemBar,
   Checkbox,
+  Tooltip,
 } from "@mui/material";
 import { randomBytes } from "crypto";
 import { DownloadType } from "enums/Download";
@@ -55,7 +56,6 @@ const Results: FC<{
     <Layout title="Results">
       <Grid container>
         {r.map((key: string, i: number) => {
-          console.log(multiSelect[key]);
           return (
             <Grid key={i} xs={12} md={12 / r.length} item>
               <Card className={classes.card}>
@@ -63,68 +63,92 @@ const Results: FC<{
                   className={classes.header}
                   title={key}
                   subheader={`Number of images found: ${
-                    Object.values(results[key])[0].length
+                    Object.values(results[key])[0]
+                      ? Object.values(results[key])[0].length
+                      : 0
                   }`}
                 />
 
                 <CardMedia>
                   <ImageList key={key} className={classes.media} cols={3}>
-                    {Object.values(results[key])[0].map((img, i) => (
-                      <ImageListItem key={i}>
-                        <img
-                          src={`${img}?w=${sx.val}&h=${sx.val}&fit=${sx.fit}&auto=${sx.auto}`}
-                          srcSet={`${img}?w=${sx.val}&h=${sx.val}&fit=${sx.fit}&auto=${sx.auto}&dpr=2 2x`}
-                          alt="photo.png"
-                          loading="lazy"
-                        />
-                        <ImageListItemBar
-                          title={"Image"}
-                          actionIcon={
-                            <>
-                              {!multiSelect[key] ? (
-                                <IconButton
-                                  sx={{ color: "rgba(255, 255, 255, 0.54)" }}
-                                  aria-label={`download image`}
-                                >
-                                  <Download />
-                                </IconButton>
-                              ) : (
-                                <Checkbox
-                                  sx={{ color: "rgba(255, 255, 255, 0.54)" }}
-                                  aria-label={`select image`}
-                                  onClick={() =>
-                                    addRemoveHandler(
-                                      key,
-                                      img,
-                                      downloadableSet.current,
-                                      setAmount
-                                    )
-                                  }
-                                />
-                              )}
-                              <IconButton
-                                sx={{ color: "rgba(255, 255, 255, 0.54)" }}
-                                aria-label={`redirect to image`}
-                              >
-                                <ArrowOutward />
-                              </IconButton>
-                            </>
-                          }
-                        />
-                      </ImageListItem>
-                    ))}
+                    {Object.values(results[key])[0] ? (
+                      Object.values(results[key])[0].map((img, i) => (
+                        <ImageListItem key={i}>
+                          <img
+                            src={`${img}?w=${sx.val}&h=${sx.val}&fit=${sx.fit}&auto=${sx.auto}`}
+                            srcSet={`${img}?w=${sx.val}&h=${sx.val}&fit=${sx.fit}&auto=${sx.auto}&dpr=2 2x`}
+                            alt="photo.png"
+                            loading="lazy"
+                          />
+                          <ImageListItemBar
+                            title={"Image"}
+                            actionIcon={
+                              <>
+                                {!multiSelect[key] ? (
+                                  <Tooltip title="Download">
+                                    <IconButton
+                                      sx={{
+                                        color: "rgba(255, 255, 255, 0.54)",
+                                      }}
+                                      aria-label={`download image`}
+                                      onClick={(e) =>
+                                        downloadHandler(
+                                          DownloadType.SINGLE,
+                                          null,
+                                          img
+                                        )
+                                      }
+                                    >
+                                      <Download />
+                                    </IconButton>
+                                  </Tooltip>
+                                ) : (
+                                  <Tooltip title="Toggle Select">
+                                    <Checkbox
+                                      sx={{
+                                        color: "rgba(255, 255, 255, 0.54)",
+                                      }}
+                                      aria-label={`select image`}
+                                      onClick={() =>
+                                        addRemoveHandler(
+                                          key,
+                                          img,
+                                          downloadableSet.current,
+                                          setAmount
+                                        )
+                                      }
+                                    />
+                                  </Tooltip>
+                                )}
+                                <Tooltip title="Redirect to image">
+                                  <IconButton
+                                    sx={{ color: "rgba(255, 255, 255, 0.54)" }}
+                                    aria-label={`redirect to image`}
+                                  >
+                                    <ArrowOutward />
+                                  </IconButton>
+                                </Tooltip>
+                              </>
+                            }
+                          />
+                        </ImageListItem>
+                      ))
+                    ) : (
+                      <ImageListItem></ImageListItem>
+                    )}
                   </ImageList>
                 </CardMedia>
                 <Grid container>
                   <Grid xs={6} md={6} item>
                     {!multiSelect[key] ? (
                       <Button
+                        aria-label="bulk download"
                         variant="outlined"
                         className={classes.downloadBtn}
                         type="button"
                         name={key}
                         onClick={(e) =>
-                          downloadHandler(e, DownloadType.BULK, results)
+                          downloadHandler(DownloadType.BULK, results)
                         }
                         fullWidth
                       >
@@ -138,7 +162,6 @@ const Results: FC<{
                         name={key}
                         onClick={(e) =>
                           downloadHandler(
-                            e,
                             DownloadType.SELECTED,
                             downloadableSet.current
                           )
@@ -152,6 +175,7 @@ const Results: FC<{
                   <Grid xs={6} md={6} item>
                     {!multiSelect[key] ? (
                       <Button
+                        aria-label="select photos"
                         variant="outlined"
                         className={classes.selectBtn}
                         type="button"
@@ -163,6 +187,7 @@ const Results: FC<{
                       </Button>
                     ) : (
                       <Button
+                        aria-label="cancel photos"
                         variant="outlined"
                         className={classes.cancelBtn}
                         type="button"

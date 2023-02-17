@@ -3,7 +3,7 @@ import { RestHandler, rest } from "msw";
 import { sampleImgs } from "./resources";
 
 export const handlers: RestHandler[] = [
-  rest.get("/api/v1/find", async (req, res, ctx) => {
+  rest.get("http://localhost:8080/api/v1/find", async (req, res, ctx) => {
     const params = req.url.searchParams;
     const url = params.get("url");
     const mode = params.get("mode");

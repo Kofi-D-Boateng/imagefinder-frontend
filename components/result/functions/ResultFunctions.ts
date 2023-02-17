@@ -31,13 +31,10 @@ export const addRemoveHandler: (
 };
 
 export const downloadHandler: (
-  event: MouseEvent<HTMLButtonElement>,
   type: DownloadType,
-  imageMap: UrlImageMap<string, string> | Map<string, Set<string>>
-) => void = (e, type, map) => {
-  const { name } = e.currentTarget;
-  console.log(name);
-  if (!name) return;
+  imageMap?: UrlImageMap<string, string> | Map<string, Set<string>>,
+  src?: string
+) => void = (type, map, src) => {
   if (type === DownloadType.BULK) {
     const m: UrlImageMap<string, string> = map as UrlImageMap<string, string>;
     Object.keys(m).forEach((key, i) => {
@@ -72,5 +69,11 @@ export const downloadHandler: (
         URL.revokeObjectURL(url);
       });
     });
+  } else if (type === DownloadType.SINGLE && src?.trim().length > 0) {
+    console.log(src);
+    const link = document.createElement("a");
+    link.href = src;
+    link.download = src;
+    link.click();
   }
 };
