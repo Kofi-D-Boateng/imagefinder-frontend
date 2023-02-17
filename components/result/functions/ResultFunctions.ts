@@ -1,0 +1,76 @@
+import { DownloadType } from "enums/Download";
+import { UrlImageMap } from "interfaces/ImageMap";
+import JSZip from "jszip";
+import { Dispatch, MouseEvent, SetStateAction } from "react";
+
+export const addRemoveHandler: (
+  key: string,
+  src: string,
+  map: Map<string, Set<string>>,
+  setAmount: Dispatch<
+    SetStateAction<{
+      [key: string]: number;
+    }>
+  >
+) => void = (key, src, map, setAmount) => {
+  if (!map.has(key)) {
+    map.get(key).add(src);
+    setAmount((prev) => {
+      prev[key]++;
+      return { ...prev };
+    });
+  } else {
+    map.get(key).delete(src);
+    setAmount((prev) => {
+      if (prev[key] > 0) {
+        prev[key]--;
+      }
+      return { ...prev };
+    });
+  }
+};
+
+export const downloadHandler: (
+  event: MouseEvent<HTMLButtonElement>,
+  type: DownloadType,
+  imageMap: UrlImageMap<string, string> | Map<string, Set<string>>
+) => void = (e, type, map) => {
+  const { name } = e.currentTarget;
+  console.log(name);
+  if (!name) return;
+  if (type === DownloadType.BULK) {
+    const m: UrlImageMap<string, string> = map as UrlImageMap<string, string>;
+    Object.keys(m).forEach((key, i) => {
+      const zip = new JSZip();
+      const arr: Array<string> = Object.values(m[key])[0];
+      arr.forEach((src, i) => {
+        zip.file(`image${i}.jpg`, src, { binary: false });
+      });
+      zip.generateAsync({ type: "blob" }).then((blob) => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `images${i + 1}.zip`;
+        link.click();
+        URL.revokeObjectURL(url);
+      });
+    });
+  } else if (type === DownloadType.SELECTED) {
+    const m = map as Map<string, Set<string>>;
+    let count = 0;
+    m.forEach((val, key) => {
+      const zip = new JSZip();
+      val.forEach((src, i) => {
+        zip.file(`image${i}.jpg`, src, { binary: false });
+      });
+      zip.generateAsync({ type: "blob" }).then((blob) => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `images${++count}.zip`;
+        link.click();
+        URL.revokeObjectURL(url);
+      });
+    });
+  }
+};

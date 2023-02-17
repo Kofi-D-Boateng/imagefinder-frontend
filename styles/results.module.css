@@ -9,3 +9,63 @@
   align-content: center;
   justify-content: space-between;
 }
+
+.header {
+  background-color: lightgray;
+}
+
+.card {
+  margin: 100px auto;
+  width: 90%;
+}
+
+.media {
+  height: 400px;
+  width: 100%;
+  overflow-y: auto;
+}
+
+.cancelBtn {
+  background-color: white;
+  color: red;
+  border-color: red;
+  text-transform: none;
+  transition-duration: 400s;
+  transition-property: all;
+}
+
+.cancelBtn:hover {
+  background-color: red;
+  color: white;
+  border-color: red;
+}
+
+.downloadBtn {
+  background-color: white;
+  color: green;
+  border-color: green;
+  text-transform: none;
+  transition-duration: 400s;
+  transition-property: all;
+}
+
+.downloadBtn:hover {
+  background-color: green;
+  color: white;
+  border-color: green;
+}
+
+.selectBtn {
+  background-color: white;
+  color: blue;
+  border-color: blue;
+  text-transform: none;
+  transition-duration: 400s;
+  transition-property: all;
+}
+
+.selectBtn:hover {
+  background-color: blue;
+  color: white;
+  border-color: blue;
+}

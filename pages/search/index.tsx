@@ -8,7 +8,7 @@ import InProgress from "../../components/result/InProgress";
 import Results from "../../components/result/Results";
 
 type Props = {
-  urlImageMap: UrlImageMap<string, String>;
+  urlImageMap: UrlImageMap<string, string>;
   status: { error: boolean; code: number };
   isSearching: boolean;
   q: string | string[];
