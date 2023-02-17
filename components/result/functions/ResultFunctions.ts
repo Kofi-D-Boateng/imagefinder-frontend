@@ -1,7 +1,7 @@
 import { DownloadType } from "enums/Download";
 import { UrlImageMap } from "interfaces/ImageMap";
 import JSZip from "jszip";
-import { Dispatch, MouseEvent, SetStateAction } from "react";
+import { Dispatch, SetStateAction, MouseEvent } from "react";
 
 export const addRemoveHandler: (
   key: string,
@@ -76,4 +76,46 @@ export const downloadHandler: (
     link.download = src;
     link.click();
   }
+};
+
+export const toggleHandler: (
+  event: MouseEvent<HTMLDivElement>,
+  setMultiSelect: (
+    value: SetStateAction<{
+      [key: string]: boolean;
+    }>
+  ) => void,
+  setAmount: (
+    value: SetStateAction<{
+      [key: string]: number;
+    }>
+  ) => void
+) => void = (e, setMultiSelect, setAmount) => {
+  const { name } = e.currentTarget.dataset;
+  if (!name) return;
+  setMultiSelect((prev) => {
+    if (prev[name]) {
+      delete prev[name];
+    } else {
+      prev[name] = true;
+    }
+    return { ...prev };
+  });
+  setAmount((prev) => {
+    if (prev[name] > 0) {
+      delete prev[name];
+    } else {
+      prev[name] = 0;
+    }
+    return { ...prev };
+  });
+};
+
+export const redirectHandler: (
+  event: MouseEvent<HTMLButtonElement>,
+  src: string
+) => void = (e, src) => {
+  const aTag = document.createElement("a");
+  aTag.href = src;
+  aTag.click();
 };

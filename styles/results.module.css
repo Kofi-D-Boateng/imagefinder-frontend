@@ -15,7 +15,7 @@
 }
 
 .card {
-  margin: 100px auto;
+  margin: 50px auto;
   width: 90%;
 }
 
@@ -26,8 +26,10 @@
 }
 
 .cancelBtn {
-  background-color: white;
-  color: #d2042d;
+  text-align: center;
+  padding: 10px 0;
+  background-color: #d2042d;
+  color: white;
   border-color: #d2042d;
   text-transform: none;
   transition-duration: 400;
@@ -35,14 +37,15 @@
 }
 
 .cancelBtn:hover {
-  background-color: #d2042d;
-  color: white;
-  border-color: #d2042d;
+  opacity: 0.8;
+  cursor: pointer;
 }
 
 .downloadBtn {
-  background-color: white;
-  color: #228b22;
+  text-align: center;
+  padding: 10px 0;
+  background-color: #228b22;
+  color: white;
   border-color: #228b22;
   text-transform: none;
   transition-duration: 400;
@@ -50,14 +53,15 @@
 }
 
 .downloadBtn:hover {
-  background-color: #228b22;
-  color: white;
-  border-color: #228b22;
+  opacity: 0.8;
+  cursor: pointer;
 }
 
 .selectBtn {
-  background-color: white;
-  color: #4169e1;
+  text-align: center;
+  padding: 10px 0;
+  background-color: #4169e1;
+  color: white;
   border-color: #4169e1;
   text-transform: none;
   transition-duration: 400;
@@ -65,7 +69,12 @@
 }
 
 .selectBtn:hover {
-  background-color: #4169e1;
-  color: white;
-  border-color: #4169e1;
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.nonFound {
+  width: 430px;
+  height: 430px;
+  margin: auto;
 }

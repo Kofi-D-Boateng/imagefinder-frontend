@@ -1,9 +1,6 @@
 import { ArrowOutward, Download } from "@mui/icons-material";
 import {
-  Button,
   Card,
-  CardActions,
-  CardActionArea,
   CardHeader,
   CardMedia,
   Grid,
@@ -13,13 +10,19 @@ import {
   ImageListItemBar,
   Checkbox,
   Tooltip,
+  Typography,
 } from "@mui/material";
-import { randomBytes } from "crypto";
+import sadFace from "../../assets/Sad-Face-Emoji.png";
 import { DownloadType } from "enums/Download";
-import { FC, MouseEvent, useRef, useState } from "react";
+import { FC, useRef, useState } from "react";
 import { UrlImageMap } from "../../interfaces/ImageMap";
 import Layout from "../Layout";
-import { addRemoveHandler, downloadHandler } from "./functions/ResultFunctions";
+import {
+  addRemoveHandler,
+  downloadHandler,
+  redirectHandler,
+  toggleHandler,
+} from "./functions/ResultFunctions";
 
 const Results: FC<{
   results: UrlImageMap<string, string>;
@@ -34,45 +37,40 @@ const Results: FC<{
   const downloadableSet = useRef<Map<string, Set<string>>>(new Map());
   const sx = { val: 160, fit: "crop", auto: "format" };
   const r = Object.keys(results);
-  const toggleHandler: (event: MouseEvent<HTMLButtonElement>) => void = (e) => {
-    const { name } = e.currentTarget;
-    if (!name) return;
-    const n = multiSelect;
-    const a = amount;
-    if (multiSelect[name]) {
-      delete n[name];
-      delete a[name];
-      setMultiSelect({ ...n });
-      setAmount({ ...a });
-    } else {
-      n[name] = true;
-      a[name] = 0;
-      setMultiSelect({ ...n });
-      setAmount({ ...a });
-    }
-  };
 
   return (
     <Layout title="Results">
-      <Grid container>
+      <Grid sx={{ padding: "25px 0" }} container>
         {r.map((key: string, i: number) => {
           return (
-            <Grid key={i} xs={12} md={12 / r.length} item>
+            <Grid key={i} xs={12} md={4} item>
               <Card className={classes.card}>
                 <CardHeader
                   className={classes.header}
                   title={key}
+                  titleTypographyProps={{
+                    fontSize: "1rem",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                  }}
                   subheader={`Number of images found: ${
                     Object.values(results[key])[0]
                       ? Object.values(results[key])[0].length
                       : 0
                   }`}
+                  subheaderTypographyProps={{
+                    fontSize: "1rem",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                  }}
                 />
 
                 <CardMedia>
-                  <ImageList key={key} className={classes.media} cols={3}>
-                    {Object.values(results[key])[0] ? (
-                      Object.values(results[key])[0].map((img, i) => (
+                  {Object.values(results[key])[0] ? (
+                    <ImageList key={key} className={classes.media} cols={3}>
+                      {Object.values(results[key])[0].map((img, i) => (
                         <ImageListItem key={i}>
                           <img
                             src={`${img}?w=${sx.val}&h=${sx.val}&fit=${sx.fit}&auto=${sx.auto}`}
@@ -91,7 +89,7 @@ const Results: FC<{
                                         color: "rgba(255, 255, 255, 0.54)",
                                       }}
                                       aria-label={`download image`}
-                                      onClick={(e) =>
+                                      onClick={() =>
                                         downloadHandler(
                                           DownloadType.SINGLE,
                                           null,
@@ -122,8 +120,11 @@ const Results: FC<{
                                 )}
                                 <Tooltip title="Redirect to image">
                                   <IconButton
-                                    sx={{ color: "rgba(255, 255, 255, 0.54)" }}
+                                    sx={{
+                                      color: "rgba(255, 255, 255, 0.54)",
+                                    }}
                                     aria-label={`redirect to image`}
+                                    onClick={(e) => redirectHandler(e, img)}
                                   >
                                     <ArrowOutward />
                                   </IconButton>
@@ -132,72 +133,58 @@ const Results: FC<{
                             }
                           />
                         </ImageListItem>
-                      ))
-                    ) : (
-                      <ImageListItem></ImageListItem>
-                    )}
-                  </ImageList>
+                      ))}
+                    </ImageList>
+                  ) : (
+                    <Grid container>
+                      <img
+                        className={classes.nonFound}
+                        src={sadFace.src}
+                        alt="sadFace.png"
+                      />
+                    </Grid>
+                  )}
                 </CardMedia>
                 <Grid container>
-                  <Grid xs={6} md={6} item>
-                    {!multiSelect[key] ? (
-                      <Button
-                        aria-label="bulk download"
-                        variant="outlined"
-                        className={classes.downloadBtn}
-                        type="button"
-                        name={key}
-                        onClick={(e) =>
-                          downloadHandler(DownloadType.BULK, results)
-                        }
-                        fullWidth
-                      >
-                        Bulk Download
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="outlined"
-                        className={classes.downloadBtn}
-                        type="button"
-                        name={key}
-                        onClick={(e) =>
-                          downloadHandler(
+                  <Grid
+                    className={classes.downloadBtn}
+                    aria-label={
+                      !multiSelect[key] ? "bulk download" : "selected download"
+                    }
+                    onClick={(e) =>
+                      !multiSelect[key]
+                        ? downloadHandler(DownloadType.BULK, results)
+                        : downloadHandler(
                             DownloadType.SELECTED,
                             downloadableSet.current
                           )
-                        }
-                        fullWidth
-                      >
-                        {`Download ${amount[key]} photos`}
-                      </Button>
-                    )}
+                    }
+                    xs={6}
+                    md={6}
+                    item
+                  >
+                    <Typography variant="h5">
+                      {!multiSelect[key]
+                        ? "Bulk Download"
+                        : `Download ${amount[key]} photos`}
+                    </Typography>
                   </Grid>
-                  <Grid xs={6} md={6} item>
-                    {!multiSelect[key] ? (
-                      <Button
-                        aria-label="select photos"
-                        variant="outlined"
-                        className={classes.selectBtn}
-                        type="button"
-                        name={key}
-                        onClick={toggleHandler}
-                        fullWidth
-                      >
-                        Select Photos
-                      </Button>
-                    ) : (
-                      <Button
-                        aria-label="cancel photos"
-                        variant="outlined"
-                        className={classes.cancelBtn}
-                        type="button"
-                        name={key}
-                        onClick={toggleHandler}
-                        fullWidth
-                      >
-                        Cancel Selection
-                      </Button>
-                    )}
+                  <Grid
+                    className={
+                      !multiSelect[key] ? classes.selectBtn : classes.cancelBtn
+                    }
+                    aria-label={
+                      !multiSelect[key] ? "select photos" : "cancel photos"
+                    }
+                    data-name={key}
+                    onClick={(e) => toggleHandler(e, setMultiSelect, setAmount)}
+                    xs={6}
+                    md={6}
+                    item
+                  >
+                    <Typography variant="h5">
+                      {!multiSelect[key] ? "Select Photos" : "Cancel Selection"}
+                    </Typography>
                   </Grid>
                 </Grid>
               </Card>
