@@ -1,6 +1,6 @@
 import { Box, Grid, Typography, CircularProgress } from "@mui/material";
 import { FC } from "react";
-import Layout from "../Layout";
+import Layout from "../ui/Layout";
 
 const InProgress: FC<{
   classes: {

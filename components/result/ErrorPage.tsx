@@ -1,6 +1,6 @@
 import { Box, Grid, Typography } from "@mui/material";
 import { FC } from "react";
-import Layout from "../Layout";
+import Layout from "../ui/Layout";
 import errorPhoto from "../../assets/error-photo.png";
 
 const ErrorPage: FC<{

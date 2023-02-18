@@ -16,7 +16,7 @@ import sadFace from "../../assets/Sad-Face-Emoji.png";
 import { DownloadType } from "enums/Download";
 import { FC, useRef, useState } from "react";
 import { UrlImageMap } from "../../interfaces/ImageMap";
-import Layout from "../Layout";
+import Layout from "../ui/Layout";
 import {
   addRemoveHandler,
   downloadHandler,

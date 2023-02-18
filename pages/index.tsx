@@ -1,7 +1,7 @@
 import { ChangeEvent, FocusEvent, FormEvent, useState } from "react";
 import { NextRouter, useRouter } from "next/router";
 import { Grid, Typography } from "@mui/material";
-import Layout from "../components/Layout";
+import Layout from "../components/ui/Layout";
 import logo from "assets/Image_Finder.png";
 import classes from "../styles/homepage.module.css";
 import InputForm from "../components/form/InputForm";
