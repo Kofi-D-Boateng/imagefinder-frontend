@@ -6,8 +6,7 @@
 }
 
 .text {
-  align-content: center;
-  justify-content: space-between;
+  margin: 50px auto;
 }
 
 .header {
@@ -77,4 +76,36 @@
   width: 430px;
   height: 430px;
   margin: auto;
+}
+
+.errorDiv {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.errorGrid {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.errorDiv img {
+  margin: auto;
+  width: 300px;
+  height: 300px;
+}
+
+.searchDiv {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.searchGrid {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
