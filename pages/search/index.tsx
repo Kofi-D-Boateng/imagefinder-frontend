@@ -1,4 +1,5 @@
-import { NextPageContext } from "next";
+import getConfig from "next/config";
+const { publicRuntimeConfig } = getConfig();
 import { FC, useEffect, useState } from "react";
 import classes from "../../styles/results.module.css";
 import { ImageMap, UrlImageMap } from "../../interfaces/ImageMap";
@@ -6,30 +7,26 @@ import axios from "axios";
 import ErrorPage from "../../components/result/ErrorPage";
 import InProgress from "../../components/result/InProgress";
 import Results from "../../components/result/Results";
+import { NextRouter, useRouter } from "next/router";
 
 type Props = {
   urlImageMap: UrlImageMap<string, string>;
   status: { error: boolean; code: number };
   isSearching: boolean;
-  q: string | string[];
-  style: string | string[];
 };
 
-const ResultPage: FC<{ q: string | string[]; style: string | string[] }> = ({
-  q,
-  style,
-}) => {
+const ResultPage: FC = () => {
+  const router: NextRouter = useRouter();
+  const { q, style } = router.query;
   const [data, setData] = useState<Props>({
     isSearching: true,
     status: { error: false, code: 0 },
     urlImageMap: {},
-    q: q,
-    style: style,
   });
   useEffect(() => {
     if (data.isSearching) {
       axios
-        .get("http://localhost:8080/api/v1/find", {
+        .get(`/${publicRuntimeConfig.apiVersion}/find`, {
           params: { url: q, mode: style },
         })
         .then((response) => {
@@ -45,8 +42,6 @@ const ResultPage: FC<{ q: string | string[]; style: string | string[] }> = ({
             isSearching: false,
             status: { error: false, code: 200 },
             urlImageMap: map,
-            q: data.q,
-            style: data.style,
           });
         })
         .catch((reason) => {
@@ -58,8 +53,6 @@ const ResultPage: FC<{ q: string | string[]; style: string | string[] }> = ({
                 code: Number(reason["response"]["status"]),
               },
               urlImageMap: {},
-              q: data.q,
-              style: data.style,
             });
           } else {
             console.log(reason);
@@ -67,31 +60,17 @@ const ResultPage: FC<{ q: string | string[]; style: string | string[] }> = ({
               isSearching: false,
               status: { error: true, code: 500 },
               urlImageMap: {},
-              q: data.q,
-              style: data.style,
             });
           }
         });
     }
-  }, [data.isSearching]);
+  }, [data.isSearching, q, style]);
 
   if (data.isSearching) return <InProgress classes={classes} />;
   if (!data.isSearching && data.status.error)
     return <ErrorPage classes={classes} />;
   if (!data.isSearching && !data.status.error)
     return <Results results={data.urlImageMap} classes={classes} />;
-};
-
-export const getServerSideProps: (context: NextPageContext) => Promise<{
-  props: { q: string | string[]; style: string | string[] };
-}> = async (context) => {
-  const { q, style } = context.query;
-  return {
-    props: {
-      q: q,
-      style: style,
-    },
-  };
 };
 
 export default ResultPage;

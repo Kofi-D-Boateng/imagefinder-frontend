@@ -3,7 +3,9 @@
  */
 
 const nextConfig = {
-  distDir: "build",
+  publicRuntimeConfig: {
+    apiVersion: process.env.API_VERSION || "api/v1",
+  },
 };
 
 export default nextConfig;

@@ -11,33 +11,31 @@ const Navbar: FC<{
   title: string;
 }> = ({ classes, title }) => {
   return (
-    <header>
-      <AppBar className={classes.navbar} elevation={1}>
-        <Toolbar>
-          {title != "ImageFinder" && (
-            <Link className={classes.link2} href="/">
-              <img src={logo.src} className={classes.logo} alt="logo.png" />
-            </Link>
-          )}
-          <Link
-            className={title === "ImageFinder" ? classes.link : classes.link2}
-            href="/"
-          >
-            <Typography variant="h6" component="div">
-              Home
-            </Typography>
+    <AppBar className={classes.navbar} elevation={1}>
+      <Toolbar>
+        {title != "ImageFinder" && (
+          <Link className={classes.link2} href="/">
+            <img src={logo.src} className={classes.logo} alt="logo.png" />
           </Link>
-          <Link
-            className={title === "ImageFinder" ? classes.link : classes.link2}
-            href="/help"
-          >
-            <Typography variant="h6" component="div">
-              Help
-            </Typography>
-          </Link>
-        </Toolbar>
-      </AppBar>
-    </header>
+        )}
+        <Link
+          className={title === "ImageFinder" ? classes.link : classes.link2}
+          href="/"
+        >
+          <Typography variant="h6" component="div">
+            Home
+          </Typography>
+        </Link>
+        <Link
+          className={title === "ImageFinder" ? classes.link : classes.link2}
+          href="/help"
+        >
+          <Typography variant="h6" component="div">
+            Help
+          </Typography>
+        </Link>
+      </Toolbar>
+    </AppBar>
   );
 };
 

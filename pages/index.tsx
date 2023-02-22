@@ -32,20 +32,22 @@ const IndexPage = () => {
   };
   const onFocusHandler: (event: FocusEvent<HTMLInputElement>) => void = (e) => {
     const values: string[] = e.currentTarget.value.split(",");
+    let count = values.length;
     for (const string of values) {
       const str = string.trim();
       if (!cache.search(str)) {
-        if (!urlPattern.test(str)) {
-          if (isValid) {
-            setIsValid(false);
-          }
-        } else {
+        if (urlPattern.test(str)) {
           cache.insert(str);
-          if (!isValid) {
-            setIsValid(true);
-          }
+          count--;
         }
+      } else {
+        count--;
       }
+    }
+    if (count == 0) {
+      setIsValid(true);
+    } else {
+      setIsValid(false);
     }
   };
 
@@ -53,23 +55,24 @@ const IndexPage = () => {
     e
   ) => {
     const values: string[] = e.currentTarget.value.split(",");
+    let count = values.length;
     for (const string of values) {
       const str = string.trim();
       if (!cache.search(str)) {
-        if (!urlPattern.test(str)) {
-          if (isValid) {
-            setIsValid(false);
-          }
-        } else {
+        if (urlPattern.test(str)) {
           cache.insert(str);
-          if (!isValid) {
-            setIsValid(true);
-          }
+          count--;
         }
+      } else {
+        count--;
       }
     }
+    if (count == 0) {
+      setIsValid(true);
+    } else {
+      setIsValid(false);
+    }
   };
-
   return (
     <Layout title="ImageFinder">
       <Grid className={classes.logo} container>
