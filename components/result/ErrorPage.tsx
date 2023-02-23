@@ -1,6 +1,6 @@
 import { Box, Grid, Typography } from "@mui/material";
 import { FC } from "react";
-import Layout from "../Layout";
+import Layout from "../ui/Layout";
 import errorPhoto from "../../assets/error-photo.png";
 
 const ErrorPage: FC<{
@@ -10,14 +10,7 @@ const ErrorPage: FC<{
 }> = ({ classes }) => {
   return (
     <Layout title="Error">
-      <Box
-        className={classes.errorDiv}
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
+      <Box className={classes.errorDiv}>
         <Grid className={classes.errorGrid} container>
           <Grid container>
             <img src={errorPhoto.src} alt="error.png" />

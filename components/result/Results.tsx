@@ -11,18 +11,22 @@ import {
   Checkbox,
   Tooltip,
   Typography,
+  useTheme,
+  Theme,
+  useMediaQuery,
 } from "@mui/material";
 import sadFace from "../../assets/Sad-Face-Emoji.png";
 import { DownloadType } from "enums/Download";
 import { FC, useRef, useState } from "react";
-import { UrlImageMap } from "../../interfaces/ImageMap";
-import Layout from "../Layout";
+import { ImageMap, UrlImageMap } from "../../interfaces/ImageMap";
+import Layout from "../ui/Layout";
 import {
   addRemoveHandler,
   downloadHandler,
   redirectHandler,
   toggleHandler,
 } from "./functions/ResultFunctions";
+import { Action } from "enums/Action";
 
 const Results: FC<{
   results: UrlImageMap<string, string>;
@@ -30,6 +34,10 @@ const Results: FC<{
     readonly [key: string]: string;
   };
 }> = ({ results, classes }) => {
+  const theme = useTheme<Theme>();
+  const isMobile: boolean = useMediaQuery<unknown>(
+    theme.breakpoints.down("md")
+  );
   const [multiSelect, setMultiSelect] = useState<{ [key: string]: boolean }>(
     {}
   );
@@ -40,10 +48,23 @@ const Results: FC<{
 
   return (
     <Layout title="Results">
-      <Grid sx={{ padding: "25px 0" }} container>
+      <Grid
+        className={!isMobile ? classes.resultGrid : classes.resultGridMobile}
+        container
+      >
         {r.map((key: string, i: number) => {
+          const innerMap: ImageMap<string, string> = results[key];
+          const innerKeys = Object.keys(innerMap);
+          const entryCount = Object.entries(innerMap).length;
+
           return (
-            <Grid key={i} xs={12} md={4} item>
+            <Grid
+              key={i}
+              sx={{ margin: "20px auto" }}
+              xs={12}
+              md={r.length > 2 ? 4 : 6}
+              item
+            >
               <Card className={classes.card}>
                 <CardHeader
                   className={classes.header}
@@ -55,9 +76,7 @@ const Results: FC<{
                     overflow: "hidden",
                   }}
                   subheader={`Number of images found: ${
-                    Object.values(results[key])[0]
-                      ? Object.values(results[key])[0].length
-                      : 0
+                    entryCount > 0 ? innerMap[innerKeys.at(0)]?.length : 0
                   }`}
                   subheaderTypographyProps={{
                     fontSize: "1rem",
@@ -68,72 +87,78 @@ const Results: FC<{
                 />
 
                 <CardMedia>
-                  {Object.values(results[key])[0] ? (
+                  {innerMap && innerMap[innerKeys.at(0)]?.length > 0 ? (
                     <ImageList key={key} className={classes.media} cols={3}>
-                      {Object.values(results[key])[0].map((img, i) => (
-                        <ImageListItem key={i}>
-                          <img
-                            src={`${img}?w=${sx.val}&h=${sx.val}&fit=${sx.fit}&auto=${sx.auto}`}
-                            srcSet={`${img}?w=${sx.val}&h=${sx.val}&fit=${sx.fit}&auto=${sx.auto}&dpr=2 2x`}
-                            alt="photo.png"
-                            loading="lazy"
-                          />
-                          <ImageListItemBar
-                            title={"Image"}
-                            actionIcon={
-                              <>
-                                {!multiSelect[key] ? (
-                                  <Tooltip title="Download">
+                      {innerKeys
+                        .map((key) => innerMap[key])[0]
+                        .map((img, i) => (
+                          <ImageListItem key={i}>
+                            <img
+                              src={`${img}?w=${sx.val}&h=${sx.val}&fit=${sx.fit}&auto=${sx.auto}`}
+                              srcSet={`${img}?w=${sx.val}&h=${sx.val}&fit=${sx.fit}&auto=${sx.auto}&dpr=2 2x`}
+                              alt="photo.png"
+                              loading="lazy"
+                            />
+                            <ImageListItemBar
+                              title={"Image"}
+                              actionIcon={
+                                <>
+                                  {!multiSelect[key] ? (
+                                    <Tooltip title="Download">
+                                      <IconButton
+                                        sx={{
+                                          color: "rgba(255, 255, 255, 0.54)",
+                                        }}
+                                        aria-label={`download image`}
+                                        onClick={() =>
+                                          downloadHandler(
+                                            DownloadType.SINGLE,
+                                            null,
+                                            img
+                                          )
+                                        }
+                                      >
+                                        <Download />
+                                      </IconButton>
+                                    </Tooltip>
+                                  ) : (
+                                    <Tooltip title="Toggle Select">
+                                      <Checkbox
+                                        sx={{
+                                          color: "rgba(255, 255, 255, 0.54)",
+                                        }}
+                                        aria-label={`select image`}
+                                        name="toggle-select"
+                                        onChange={(e) =>
+                                          addRemoveHandler(
+                                            key,
+                                            img,
+                                            downloadableSet.current,
+                                            setAmount,
+                                            e.target.checked
+                                              ? Action.ADD
+                                              : Action.REMOVE
+                                          )
+                                        }
+                                      />
+                                    </Tooltip>
+                                  )}
+                                  <Tooltip title="Redirect to image">
                                     <IconButton
                                       sx={{
                                         color: "rgba(255, 255, 255, 0.54)",
                                       }}
-                                      aria-label={`download image`}
-                                      onClick={() =>
-                                        downloadHandler(
-                                          DownloadType.SINGLE,
-                                          null,
-                                          img
-                                        )
-                                      }
+                                      aria-label={`redirect to image`}
+                                      onClick={(e) => redirectHandler(e, img)}
                                     >
-                                      <Download />
+                                      <ArrowOutward />
                                     </IconButton>
                                   </Tooltip>
-                                ) : (
-                                  <Tooltip title="Toggle Select">
-                                    <Checkbox
-                                      sx={{
-                                        color: "rgba(255, 255, 255, 0.54)",
-                                      }}
-                                      aria-label={`select image`}
-                                      onClick={() =>
-                                        addRemoveHandler(
-                                          key,
-                                          img,
-                                          downloadableSet.current,
-                                          setAmount
-                                        )
-                                      }
-                                    />
-                                  </Tooltip>
-                                )}
-                                <Tooltip title="Redirect to image">
-                                  <IconButton
-                                    sx={{
-                                      color: "rgba(255, 255, 255, 0.54)",
-                                    }}
-                                    aria-label={`redirect to image`}
-                                    onClick={(e) => redirectHandler(e, img)}
-                                  >
-                                    <ArrowOutward />
-                                  </IconButton>
-                                </Tooltip>
-                              </>
-                            }
-                          />
-                        </ImageListItem>
-                      ))}
+                                </>
+                              }
+                            />
+                          </ImageListItem>
+                        ))}
                     </ImageList>
                   ) : (
                     <Grid container>
@@ -153,10 +178,12 @@ const Results: FC<{
                     }
                     onClick={(e) =>
                       !multiSelect[key]
-                        ? downloadHandler(DownloadType.BULK, results)
+                        ? downloadHandler(DownloadType.BULK, results, "", key)
                         : downloadHandler(
                             DownloadType.SELECTED,
-                            downloadableSet.current
+                            downloadableSet.current,
+                            "",
+                            key
                           )
                     }
                     xs={6}
