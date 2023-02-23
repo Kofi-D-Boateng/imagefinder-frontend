@@ -1,12 +1,13 @@
 import axios from "axios";
+import { config } from "config/config";
 import { Action } from "enums/Action";
 import { DownloadType } from "enums/Download";
 import { UrlImageMap } from "interfaces/ImageMap";
 import JSZip from "jszip";
-const zip = new JSZip();
-import getConfig from "next/config";
-const { publicRuntimeConfig } = getConfig();
 import { Dispatch, SetStateAction, MouseEvent } from "react";
+
+const zip = new JSZip();
+const apiVersion = config.api;
 
 export const addRemoveHandler: (
   key: string,
@@ -19,7 +20,6 @@ export const addRemoveHandler: (
   >,
   action: Action
 ) => void = (key, src, map, setAmount, action) => {
-  console.log(map);
   if (action === Action.ADD) {
     if (map.has(key)) {
       map.get(key).add(src);
@@ -47,7 +47,6 @@ export const addRemoveHandler: (
       });
     }
   }
-  console.log(map);
 };
 
 export const downloadHandler: (
@@ -61,6 +60,7 @@ export const downloadHandler: (
     const m: UrlImageMap<string, string> = map as UrlImageMap<string, string>;
     const innerMap = m[key];
     const keys = Object.keys(innerMap);
+
     keys.forEach((k) => innerMap[k].forEach((src) => srcArr.push(src)));
     if (srcArr.length < 50) {
       downloadZip(srcArr);
@@ -77,7 +77,7 @@ export const downloadHandler: (
     }
   } else if (type === DownloadType.SINGLE && src?.trim().length > 0) {
     axios
-      .get(`/${publicRuntimeConfig.apiVersion}/download-image`, {
+      .get(`/${apiVersion}/download-image`, {
         headers: { Accept: "application/octet-stream" },
         responseType: "arraybuffer",
         params: { src: src },
@@ -93,7 +93,7 @@ export const downloadHandler: (
         link.download = "image.jpg";
         link.click();
       })
-      .catch((reason) => console.log(reason));
+      .catch();
   }
 };
 
@@ -182,7 +182,7 @@ const chunkedDownloadZip: (
 
   batchSet.map((val, i) =>
     axios
-      .get(`/${publicRuntimeConfig.apiVersion}/download-zip`, {
+      .get(`/${apiVersion}/download-zip`, {
         headers: { Accept: "application/octet-stream" },
         params: { srcs: JSON.stringify(val.join(",")) },
         responseType: "arraybuffer",
@@ -202,7 +202,7 @@ const chunkedDownloadZip: (
 
 const downloadZip: (srcs: Set<string> | Array<string>) => void = (srcs) => {
   axios
-    .get(`/${publicRuntimeConfig.apiVersion}/download-zip`, {
+    .get(`/${apiVersion}/download-zip`, {
       headers: { Accept: "application/octet-stream" },
       params: {
         srcs:
@@ -223,5 +223,5 @@ const downloadZip: (srcs: Set<string> | Array<string>) => void = (srcs) => {
       link.download = "images.zip";
       link.click();
     })
-    .catch((reason) => console.log(reason));
+    .catch();
 };

@@ -1,5 +1,3 @@
-import getConfig from "next/config";
-const { publicRuntimeConfig } = getConfig();
 import { FC, useEffect, useState } from "react";
 import classes from "../../styles/results.module.css";
 import { ImageMap, UrlImageMap } from "../../interfaces/ImageMap";
@@ -8,6 +6,7 @@ import ErrorPage from "../../components/result/ErrorPage";
 import InProgress from "../../components/result/InProgress";
 import Results from "../../components/result/Results";
 import { NextRouter, useRouter } from "next/router";
+import { config } from "config/config";
 
 type Props = {
   urlImageMap: UrlImageMap<string, string>;
@@ -17,6 +16,7 @@ type Props = {
 
 const ResultPage: FC = () => {
   const router: NextRouter = useRouter();
+  const apiVersion = config.api;
   const { q, style } = router.query;
   const [data, setData] = useState<Props>({
     isSearching: true,
@@ -26,7 +26,7 @@ const ResultPage: FC = () => {
   useEffect(() => {
     if (data.isSearching) {
       axios
-        .get(`http://localhost:9000/${publicRuntimeConfig.apiVersion}/find`, {
+        .get(`${apiVersion}/find`, {
           params: { url: q, mode: style },
         })
         .then((response) => {
