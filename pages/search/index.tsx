@@ -55,7 +55,6 @@ const ResultPage: FC = () => {
               urlImageMap: {},
             });
           } else {
-            console.log(reason);
             setData({
               isSearching: false,
               status: { error: true, code: 500 },
