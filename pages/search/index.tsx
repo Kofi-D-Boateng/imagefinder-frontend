@@ -26,7 +26,7 @@ const ResultPage: FC = () => {
   useEffect(() => {
     if (data.isSearching) {
       axios
-        .get(`/${publicRuntimeConfig.apiVersion}/find`, {
+        .get(`http://localhost:9000/${publicRuntimeConfig.apiVersion}/find`, {
           params: { url: q, mode: style },
         })
         .then((response) => {

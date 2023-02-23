@@ -26,14 +26,6 @@ const Navbar: FC<{
             Home
           </Typography>
         </Link>
-        <Link
-          className={title === "ImageFinder" ? classes.link : classes.link2}
-          href="/help"
-        >
-          <Typography variant="h6" component="div">
-            Help
-          </Typography>
-        </Link>
       </Toolbar>
     </AppBar>
   );

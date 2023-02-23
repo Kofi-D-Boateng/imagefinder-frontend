@@ -15,7 +15,7 @@
 
 .card {
   margin: auto;
-  width: 90%;
+  width: 80%;
 }
 
 .media {
@@ -108,4 +108,16 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+.resultGrid {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.resultGridMobile {
+  display: flex;
+  grid-template-rows: auto 1fr auto;
 }

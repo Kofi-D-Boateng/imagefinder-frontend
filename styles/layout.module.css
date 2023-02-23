@@ -58,10 +58,22 @@
 }
 
 .footer {
-  background-color: lightgray;
-  text-align: center;
+  position: absolute;
+  min-width: 100%;
   top: auto;
   bottom: 0;
+  background-color: lightgray;
+  text-align: center;
+  padding: 20px;
+}
+.footerMobile {
+  position: relative;
+  min-width: 100%;
+  top: auto;
+  bottom: 0;
+  background-color: lightgray;
+  text-align: center;
+  padding: 20px;
 }
 
 .navbar {
@@ -71,7 +83,7 @@
 }
 
 .link {
-  margin: 0 10px;
+  margin: 0 5px;
   text-decoration: none;
   color: black;
   transition-duration: 300s;
@@ -84,7 +96,7 @@
 }
 
 .link2 {
-  margin: 0 40px;
+  margin: 0 30px;
   text-decoration: none;
   color: black;
   transition-duration: 300s;

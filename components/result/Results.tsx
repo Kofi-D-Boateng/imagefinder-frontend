@@ -11,6 +11,9 @@ import {
   Checkbox,
   Tooltip,
   Typography,
+  useTheme,
+  Theme,
+  useMediaQuery,
 } from "@mui/material";
 import sadFace from "../../assets/Sad-Face-Emoji.png";
 import { DownloadType } from "enums/Download";
@@ -31,6 +34,10 @@ const Results: FC<{
     readonly [key: string]: string;
   };
 }> = ({ results, classes }) => {
+  const theme = useTheme<Theme>();
+  const isMobile: boolean = useMediaQuery<unknown>(
+    theme.breakpoints.down("md")
+  );
   const [multiSelect, setMultiSelect] = useState<{ [key: string]: boolean }>(
     {}
   );
@@ -41,14 +48,19 @@ const Results: FC<{
 
   return (
     <Layout title="Results">
-      <Grid sx={{ margin: "100px auto" }} container>
+      <Grid
+        className={!isMobile ? classes.resultGrid : classes.resultGridMobile}
+        container
+      >
         {r.map((key: string, i: number) => {
           const innerMap: ImageMap<string, string> = results[key];
           const innerKeys = Object.keys(innerMap);
+          const entryCount = Object.entries(innerMap).length;
+
           return (
             <Grid
               key={i}
-              sx={{ margin: "auto" }}
+              sx={{ margin: "20px auto" }}
               xs={12}
               md={r.length > 2 ? 4 : 6}
               item
@@ -64,7 +76,7 @@ const Results: FC<{
                     overflow: "hidden",
                   }}
                   subheader={`Number of images found: ${
-                    innerMap ? innerMap[innerKeys.at(0)]?.length : 0
+                    entryCount > 0 ? innerMap[innerKeys.at(0)]?.length : 0
                   }`}
                   subheaderTypographyProps={{
                     fontSize: "1rem",

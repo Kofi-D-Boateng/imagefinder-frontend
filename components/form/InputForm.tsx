@@ -6,6 +6,7 @@ import {
   IconButton,
   InputBase,
   Paper,
+  Tooltip,
 } from "@mui/material";
 import { Search } from "@mui/icons-material";
 import { ChangeEvent, FocusEvent, FC, FormEvent } from "react";
@@ -25,13 +26,15 @@ const InputForm: FC<{
       elevation={0}
       onSubmit={submit}
     >
-      <FormGroup sx={{ backgroundColor: "transparent" }}>
-        <FormControlLabel
-          control={<Checkbox name="deepSearch" />}
-          sx={{ backgroundColor: "transparent" }}
-          label="Deep Search"
-        />
-      </FormGroup>
+      <Tooltip title="Select if you want more than just 1 page worth of photos.">
+        <FormGroup sx={{ backgroundColor: "transparent" }}>
+          <FormControlLabel
+            control={<Checkbox name="deepSearch" />}
+            sx={{ backgroundColor: "transparent" }}
+            label="Deep Search"
+          />
+        </FormGroup>
+      </Tooltip>
       <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
       <InputBase
         sx={{ ml: 1, flex: 1 }}

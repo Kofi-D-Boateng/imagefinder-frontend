@@ -5,6 +5,7 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { CacheProvider } from "@emotion/react";
 import createEmotionCache from "config/createEmotionCache";
+import { Theme, useMediaQuery, useTheme } from "@mui/material";
 
 type Props = {
   children?: ReactNode;
@@ -14,6 +15,11 @@ type Props = {
 const clientSideCache = createEmotionCache();
 
 const Layout = ({ children, title = "This is the default title" }: Props) => {
+  const theme = useTheme<Theme>();
+  const isMobile: boolean = useMediaQuery<unknown>(
+    theme.breakpoints.down("md")
+  );
+
   useEffect(() => {
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector("#jss-server-side");
@@ -34,8 +40,12 @@ const Layout = ({ children, title = "This is the default title" }: Props) => {
         />
       </Head>
       <Navbar classes={classes} title={title} />
-      <div>{children}</div>
-      <Footer classes={classes} />
+      <div
+        style={{ fontFamily: "Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }}
+      >
+        {children}
+      </div>
+      <Footer classes={classes} isMobile={isMobile} />
     </CacheProvider>
   );
 };

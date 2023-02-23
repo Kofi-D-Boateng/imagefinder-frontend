@@ -188,7 +188,6 @@ const chunkedDownloadZip: (
         responseType: "arraybuffer",
       })
       .then((response) => zip.file(`batch${i}.zip`, response.data))
-      .catch((r) => console.log(r["message"] ? r["message"] : r))
   );
 
   // Generate the zip file and send it to the user
