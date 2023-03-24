@@ -1,4 +1,4 @@
-import { TrieTree } from "@/components/ui/classes/wordCacheSingleton";
+import { TrieTree } from "classes/wordCacheSingleton";
 
 describe("TrieTree Test Suite", () => {
   test("Trie Creation", () => {

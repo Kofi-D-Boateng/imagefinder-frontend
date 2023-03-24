@@ -149,7 +149,7 @@ const Results: FC<{
                                         color: "rgba(255, 255, 255, 0.54)",
                                       }}
                                       aria-label={`redirect to image`}
-                                      onClick={(e) => redirectHandler(e, img)}
+                                      onClick={() => redirectHandler(img)}
                                     >
                                       <ArrowOutward />
                                     </IconButton>

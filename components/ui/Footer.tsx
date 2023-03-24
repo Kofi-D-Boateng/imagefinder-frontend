@@ -6,9 +6,18 @@ const Footer: FC<{
     readonly [key: string]: string;
   };
   isMobile: boolean;
-}> = ({ classes, isMobile }) => {
+  title: string;
+}> = ({ classes, isMobile, title }) => {
   return (
-    <footer className={!isMobile ? classes.footer : classes.footerMobile}>
+    <footer
+      className={
+        !isMobile
+          ? classes.footer
+          : title === "Result"
+          ? classes.footer
+          : classes.footerMobile
+      }
+    >
       <Grid container>
         <Typography sx={{ margin: "auto" }} variant="body1">
           © {new Date().getFullYear()} ImageFinder

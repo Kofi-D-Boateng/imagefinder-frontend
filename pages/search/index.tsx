@@ -1,12 +1,11 @@
 import { FC, useEffect, useState } from "react";
 import classes from "../../styles/results.module.css";
 import { ImageMap, UrlImageMap } from "../../interfaces/ImageMap";
-import axios from "axios";
 import ErrorPage from "../../components/result/ErrorPage";
 import InProgress from "../../components/result/InProgress";
 import Results from "../../components/result/Results";
 import { NextRouter, useRouter } from "next/router";
-import { config } from "config/config";
+import AWS from "aws-sdk";
 
 type Props = {
   urlImageMap: UrlImageMap<string, string>;
@@ -14,9 +13,17 @@ type Props = {
   isSearching: boolean;
 };
 
+AWS.config.update({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
+});
+const Lambda = new AWS.Lambda();
+
 const ResultPage: FC = () => {
   const router: NextRouter = useRouter();
-  const apiVersion = config.api;
   const { q, style } = router.query;
   const [data, setData] = useState<Props>({
     isSearching: true,
@@ -25,13 +32,17 @@ const ResultPage: FC = () => {
   });
   useEffect(() => {
     if (data.isSearching) {
-      axios
-        .get(`${apiVersion}/find`, {
-          params: { url: q, mode: style },
-        })
-        .then((response) => {
+      Lambda.invoke({
+        FunctionName: process.env.FUNCTION_NAMES[0],
+        InvocationType: "RequestResponse",
+        Payload: JSON.stringify({ url: q, mode: style }),
+      })
+        .promise()
+        .then((data) => {
           const map: UrlImageMap<string, string> = {};
-          for (const [outKey, inMap] of Object.entries(response.data)) {
+          for (const [outKey, inMap] of Object.entries(
+            JSON.parse(data.Payload.toString())
+          )) {
             const innerMap: ImageMap<string, string> = {};
             for (const [inKey, value] of Object.entries(inMap)) {
               innerMap[inKey] = value;
@@ -44,24 +55,7 @@ const ResultPage: FC = () => {
             urlImageMap: map,
           });
         })
-        .catch((reason) => {
-          if (reason["response"]) {
-            setData({
-              isSearching: false,
-              status: {
-                error: true,
-                code: Number(reason["response"]["status"]),
-              },
-              urlImageMap: {},
-            });
-          } else {
-            setData({
-              isSearching: false,
-              status: { error: true, code: 500 },
-              urlImageMap: {},
-            });
-          }
-        });
+        .catch((err) => console.log(err));
     }
   }, [data.isSearching, q, style]);
 

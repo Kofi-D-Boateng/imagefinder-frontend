@@ -1,4 +1,4 @@
-import { WordCacheSingleton } from "@/components/ui/classes/wordCacheSingleton";
+import { WordCacheSingleton } from "classes/wordCacheSingleton";
 
 describe("WordCacheSingleton Test Suite", () => {
   test("Singleton Creation", () => {
