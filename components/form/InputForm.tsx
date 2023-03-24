@@ -9,7 +9,14 @@ import {
   Tooltip,
 } from "@mui/material";
 import { Search } from "@mui/icons-material";
-import { ChangeEvent, FocusEvent, FC, FormEvent } from "react";
+import {
+  ChangeEvent,
+  FocusEvent,
+  FC,
+  FormEvent,
+  SetStateAction,
+  Dispatch,
+} from "react";
 
 const InputForm: FC<{
   classes: {
@@ -18,7 +25,8 @@ const InputForm: FC<{
   submit: (event: FormEvent<HTMLFormElement>) => void;
   focus: (event: FocusEvent<HTMLInputElement>) => void;
   change: (event: ChangeEvent<HTMLInputElement>) => void;
-}> = ({ classes, submit, focus, change }) => {
+  setMode: Dispatch<SetStateAction<boolean>>;
+}> = ({ classes, submit, focus, change, setMode }) => {
   return (
     <Paper
       component="form"
@@ -32,6 +40,7 @@ const InputForm: FC<{
             control={<Checkbox name="deepSearch" />}
             sx={{ backgroundColor: "transparent" }}
             label="Deep Search"
+            onClick={() => setMode((prev) => (!prev ? true : false))}
           />
         </FormGroup>
       </Tooltip>

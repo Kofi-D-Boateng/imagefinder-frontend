@@ -45,7 +45,7 @@ const Layout = ({ children, title = "This is the default title" }: Props) => {
       >
         {children}
       </div>
-      <Footer classes={classes} isMobile={isMobile} />
+      <Footer classes={classes} isMobile={isMobile} title={title} />
     </CacheProvider>
   );
 };

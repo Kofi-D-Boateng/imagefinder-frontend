@@ -1,3 +1,5 @@
 /node_modules
 *.md
 .next
+*.eslintrc.json
+*.github

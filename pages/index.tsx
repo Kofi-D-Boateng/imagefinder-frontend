@@ -5,12 +5,17 @@ import Layout from "../components/ui/Layout";
 import logo from "assets/Image_Finder.png";
 import classes from "../styles/homepage.module.css";
 import InputForm from "../components/form/InputForm";
-import { WordCacheSingleton } from "@/components/ui/classes/wordCacheSingleton";
+import { WordCacheSingleton } from "classes/wordCacheSingleton";
 import { SearchType } from "../enums/Search";
 
 const IndexPage = () => {
   const router: NextRouter = useRouter();
   const [isValid, setIsValid] = useState<boolean>(false);
+  const [isSetToMultiSearch, SetIsSetToMultiSearch] = useState<boolean>(false);
+  const [limit, setLimit] = useState<{ [key: string]: number }>({
+    regular: 10,
+    deepsearch: 5,
+  });
   const urlPattern =
     /^(http(s)?:\/\/)?(www\.)?([a-z0-9]+\.)?(com|net|org|edu|gov|mil|biz|info|io|ai)(\/[\w\-\.\?\=\&]*)*$/i;
   const cache = WordCacheSingleton.getCache();
@@ -39,6 +44,21 @@ const IndexPage = () => {
         if (urlPattern.test(str)) {
           cache.insert(str);
           count--;
+          if (isSetToMultiSearch) {
+            setLimit((prev) => {
+              if (prev.deepsearch > 0) {
+                prev.deepsearch--;
+              }
+              return prev;
+            });
+          } else {
+            setLimit((prev) => {
+              if (prev.regular > 0) {
+                prev.regular--;
+              }
+              return prev;
+            });
+          }
         }
       } else {
         count--;
@@ -62,6 +82,21 @@ const IndexPage = () => {
         if (urlPattern.test(str)) {
           cache.insert(str);
           count--;
+          if (isSetToMultiSearch) {
+            setLimit((prev) => {
+              if (prev.deepsearch > 0) {
+                prev.deepsearch--;
+              }
+              return prev;
+            });
+          } else {
+            setLimit((prev) => {
+              if (prev.regular > 0) {
+                prev.regular--;
+              }
+              return prev;
+            });
+          }
         }
       } else {
         count--;
@@ -94,6 +129,7 @@ const IndexPage = () => {
           submit={urlSubmitionHandler}
           focus={onFocusHandler}
           change={onChangeHandler}
+          setMode={SetIsSetToMultiSearch}
         />
       </Grid>
     </Layout>

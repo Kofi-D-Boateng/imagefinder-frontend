@@ -1,13 +1,10 @@
-import axios from "axios";
-import { config } from "config/config";
 import { Action } from "enums/Action";
 import { DownloadType } from "enums/Download";
 import { UrlImageMap } from "interfaces/ImageMap";
 import JSZip from "jszip";
 import { Dispatch, SetStateAction, MouseEvent } from "react";
-
-const zip = new JSZip();
-const apiVersion = config.api;
+import AWS from "aws-sdk";
+import { RequestQueue } from "classes/requestQueue";
 
 export const addRemoveHandler: (
   key: string,
@@ -55,41 +52,48 @@ export const downloadHandler: (
   src?: string,
   key?: string
 ) => void = (type, map, src, key) => {
+  AWS.config.update({
+    region: process.env.AWS_REGION,
+    credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    },
+  });
+  const Lambda = new AWS.Lambda();
+
   if (type === DownloadType.BULK) {
     const srcArr: Array<string> = new Array();
     const m: UrlImageMap<string, string> = map as UrlImageMap<string, string>;
     const innerMap = m[key];
     const keys = Object.keys(innerMap);
-
     keys.forEach((k) => innerMap[k].forEach((src) => srcArr.push(src)));
     if (srcArr.length < 50) {
-      downloadZip(srcArr);
+      downloadZip(srcArr, Lambda);
     } else {
-      chunkedDownloadZip(srcArr, 20);
+      chunkedDownloadZip(srcArr, 20, Lambda);
     }
   } else if (type === DownloadType.SELECTED) {
     const m = map as Map<string, Set<string>>;
     const urlSet = m.get(key);
     if (urlSet.size < 50) {
-      downloadZip(urlSet);
+      downloadZip(urlSet, Lambda);
     } else {
-      chunkedDownloadZip(urlSet, 20);
+      chunkedDownloadZip(urlSet, 20, Lambda);
     }
   } else if (type === DownloadType.SINGLE && src?.trim().length > 0) {
-    axios
-      .get(`/${apiVersion}/download-image`, {
-        headers: { Accept: "application/octet-stream" },
-        responseType: "arraybuffer",
-        params: { src: src },
-      })
+    Lambda.invoke({
+      FunctionName: process.env.FUNCTION_NAMES[1],
+      InvocationType: "RequestResponse",
+      Payload: JSON.stringify(src),
+    })
+      .promise()
       .then((response) => {
-        const url = URL.createObjectURL(
-          new Blob([response.data], {
-            type: "image/*",
-          })
-        );
         const link = document.createElement("a");
-        link.href = url;
+        const encodedString = response.Payload.toString();
+        link.href = `data:image/jpg;base64,${encodedString.substring(
+          1,
+          encodedString.length - 1
+        )}`;
         link.download = "image.jpg";
         link.click();
       })
@@ -130,10 +134,7 @@ export const toggleHandler: (
   });
 };
 
-export const redirectHandler: (
-  event: MouseEvent<HTMLButtonElement>,
-  src: string
-) => void = (e, src) => {
+export const redirectHandler: (src: string) => void = (src) => {
   const aTag = document.createElement("a");
   aTag.href = src;
   aTag.click();
@@ -150,9 +151,11 @@ export const redirectHandler: (
  */
 const chunkedDownloadZip: (
   srcs: Set<string> | Array<string>,
-  n: number
-) => void = async (srcs, n) => {
-  const batchSet: Array<Array<string>> = new Array();
+  n: number,
+  lambda: AWS.Lambda
+) => void = async (srcs, n, lambda) => {
+  const RQ: RequestQueue<string[]> = new RequestQueue();
+  const zip = new JSZip();
 
   let ind = 0;
   let arr = new Array<string>();
@@ -162,7 +165,7 @@ const chunkedDownloadZip: (
         arr.push(src);
         ind++;
       } else {
-        batchSet.push(arr);
+        RQ.add(arr);
         arr = new Array<string>();
         ind = 0;
       }
@@ -173,55 +176,71 @@ const chunkedDownloadZip: (
         arr.push(src);
         ind++;
       } else {
-        batchSet.push(arr);
+        RQ.add(arr);
         arr = new Array<string>();
         ind = 0;
       }
     });
   }
-
-  batchSet.map((val, i) =>
-    axios
-      .get(`/${apiVersion}/download-zip`, {
-        headers: { Accept: "application/octet-stream" },
-        params: { srcs: JSON.stringify(val.join(",")) },
-        responseType: "arraybuffer",
+  let batchNum = 1;
+  let delay = 1000;
+  while (!RQ.isEmpty()) {
+    setTimeout(() => {}, delay);
+    const set = RQ.poll();
+    await new Promise((resolve) => setTimeout(resolve, delay));
+    lambda
+      .invoke({
+        FunctionName: process.env.FUNCTION_NAMES[2],
+        InvocationType: "RequestResponse",
+        Payload: JSON.stringify(set.join(",")),
       })
-      .then((response) => zip.file(`batch${i}.zip`, response.data))
-  );
+      .promise()
+      .then((data) => {
+        zip.file(
+          `batch${batchNum++}.zip`,
+          data.Payload.toString().substring(
+            1,
+            data.Payload.toString().length - 1
+          ) as string,
+          { base64: true, binary: false, compression: "DEFLATE" }
+        );
+      })
+      .catch((err) => {
+        console.log(err);
+        delay = delay + 50;
+        RQ.add(set);
+      });
+  }
 
   // Generate the zip file and send it to the user
-  const content = await zip.generateAsync({ type: "arraybuffer" });
+  const zipContent = await zip.generateAsync({ type: "base64" });
   const link = document.createElement("a");
-  link.href = URL.createObjectURL(
-    new Blob([content], { type: "application/octet-stream" })
-  );
+  link.href = `data:application/zip;base64,${zipContent}`;
   link.download = "images.zip";
   link.click();
 };
 
-const downloadZip: (srcs: Set<string> | Array<string>) => void = (srcs) => {
-  axios
-    .get(`/${apiVersion}/download-zip`, {
-      headers: { Accept: "application/octet-stream" },
-      params: {
-        srcs:
-          srcs instanceof Set
-            ? JSON.stringify(Array.from(srcs).join(","))
-            : JSON.stringify(srcs.join(",")),
-      },
-      responseType: "arraybuffer",
+const downloadZip: (
+  srcs: Set<string> | Array<string>,
+  lambda: AWS.Lambda
+) => void = (srcs, lambda) => {
+  lambda
+    .invoke({
+      FunctionName: process.env.FUNCTION_NAMES[2],
+      InvocationType: "RequestResponse",
+      Payload: JSON.stringify(
+        srcs instanceof Set ? Array.from(srcs).join(",") : srcs.join(",")
+      ),
     })
+    .promise()
     .then((response) => {
-      const url = URL.createObjectURL(
-        new Blob([response.data], {
-          type: "application/zip",
-        })
-      );
       const link = document.createElement("a");
-      link.href = url;
+      const encodedString = response.Payload.toString();
+      link.href = `data:application/zip;base64,${encodedString.substring(
+        1,
+        encodedString.length - 1
+      )}`;
       link.download = "images.zip";
       link.click();
-    })
-    .catch();
+    });
 };
